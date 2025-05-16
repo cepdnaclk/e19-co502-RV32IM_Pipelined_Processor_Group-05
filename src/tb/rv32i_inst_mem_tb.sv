@@ -51,7 +51,7 @@ module rv32i_inst_mem_tb;
         #(CLOCK);
         rst = 1'b0;
 
-        for (int i = 0; i < 100; i = i + 4) begin
+        for (int i = 0; i < 200; i = i + 4) begin
             i_addr = i;
             #(CLOCK);
             $display("Address: %0d, Instruction: %h", i_addr, o_inst);

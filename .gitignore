@@ -1,9 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,vivado
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,vivado
 
-vivado_project/
-vivado_project/*
-
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -92,3 +89,4 @@ vivado_project/*
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,vivado
 
+vivado_project/*

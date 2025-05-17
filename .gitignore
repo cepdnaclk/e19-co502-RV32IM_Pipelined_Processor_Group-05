@@ -23,3 +23,5 @@
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,vivado
 
 vivado_project/*
+
+misc/RISCV-RV32I-Assembler/rvi

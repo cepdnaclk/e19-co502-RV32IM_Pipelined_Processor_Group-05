@@ -20,49 +20,39 @@
 //////////////////////////////////////////////////////////////////////////////////
 module rv32i_decoder_tb;
 
-    localparam int WIDTH = 32;  //default bit width
-    localparam int CLOCK = 10;  // clock period in ns
-    localparam int ALU_WIDTH = 14;  // ALU operation width
-    localparam int OPCODE_WIDTH = 9; // opcode width
+    localparam WIDTH = 32;  //default bit width
+    localparam CLOCK = 10;  // clock period in ns
 
+    // common ports declaration
     logic clk;
     logic rst;
 
     // ports for the instruction memory
     logic [WIDTH-1:0] i_addr;
     logic [WIDTH-1:0] o_inst;
-
+    
     // ports for the decoder
     logic [WIDTH-1:0] i_inst;
     logic [4:0] o_rs1_addr;
     logic [4:0] o_rs2_addr;
     logic [4:0] o_rd_addr;
     logic [31:0] o_imm;
-    logic [OPCODE_WIDTH-1:0] o_opcode;
-    logic [ALU_WIDTH-1:0] o_alu_op;
+    logic [2:0] o_funct3;
+    logic [6:0] o_funct7;
+    logic [6:0] o_opcode;
+
 
     // Instantiate the instruction memory
     rv32i_inst_mem #(
         .INST_WIDTH(WIDTH)
     ) uut_inst_mem (
-        .clk(clk),
-        .rst(rst),
-        .i_addr(i_addr),
-        .o_inst(o_inst)
+        .*
     );
 
     assign i_inst = o_inst;
 
     rv32i_decoder uut_decoder (
-        .clk(clk),
-        .rst(rst),
-        .i_inst(i_inst),
-        .o_rs1_addr(o_rs1_addr),
-        .o_rs2_addr(o_rs2_addr),
-        .o_rd_addr(o_rd_addr),
-        .o_imm(o_imm),
-        .o_opcode(o_opcode),
-        .o_alu_op(o_alu_op)
+        .*
     );
 
     // Clock generation

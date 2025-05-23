@@ -1,18 +1,19 @@
 // `define ALU_WIDTH 14
 
-// `define ADD_SUB 0
-// `define SLT 2
-// `define SLTU 3
-// `define XOR 4
-// `define OR 5
-// `define AND 6
-// `define SLL_SRL 7
-// `define SRL 8
-// `define SRA 9
-// `define EQ 10
-// `define NEQ 11
-// `define GE 12
-// `define GEU 13
+`define ALU_ADD 0
+`define ALU_SUB 1
+`define ALU_SLT 2
+`define ALU_SLTU 3
+`define ALU_XOR 4
+`define ALU_OR 5
+`define ALU_AND 6
+`define ALU_SLL 7
+`define ALU_SRL 8
+`define ALU_SRA 9
+`define ALU_EQ 10
+`define ALU_NEQ 11
+`define ALU_GE 12
+`define ALU_GEU 13
 
 // `define OPCODE_WIDTH 9
 

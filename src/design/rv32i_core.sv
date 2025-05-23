@@ -110,6 +110,14 @@ module rv32i_core(
         .i_imm(imm)
     );
 
-    assign rd_data = alu_result; // for now, just write back ALU result
+    // assign rd_data = alu_result; // for now, just write back ALU result
+    rv32i_write_back_mux #(
+        .WIDTH(WIDTH)
+    ) wb_mux (
+        .o_wb_data(rd_data),
+        .i_alu_result(alu_result),
+        .i_mem_data(32'b0), // TODO: connect to memory data
+        .i_opcode(opcode)
+    );
 
 endmodule

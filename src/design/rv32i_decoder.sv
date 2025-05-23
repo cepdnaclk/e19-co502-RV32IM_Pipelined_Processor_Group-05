@@ -29,7 +29,8 @@ module rv32i_decoder (
     output logic [31:0] o_imm,
     output logic [2:0] o_funct3,
     output logic [6:0] o_funct7,
-    output logic [6:0] o_opcode
+    output logic [6:0] o_opcode,
+    output logic [3:0] o_alu_op
 );
 
     always_comb begin
@@ -59,5 +60,22 @@ module rv32i_decoder (
     end
 
     assign o_imm = imm;
+
+    // ALU operation arithmetic logic
+    always_comb begin
+        case (o_funct3)
+            `FUNCT3_ADD_SUB: o_alu_op = (o_funct7[5]) ? `ALU_SUB : `ALU_ADD;
+            `FUNCT3_SLL: o_alu_op = `ALU_SLL;
+            `FUNCT3_SLT: o_alu_op = `ALU_SLT;
+            `FUNCT3_SLTU: o_alu_op = `ALU_SLTU;
+            `FUNCT3_XOR: o_alu_op = `ALU_XOR;
+            `FUNCT3_SRL_SRA: o_alu_op = (o_funct7[5]) ? `ALU_SRA : `ALU_SRL;
+            `FUNCT3_OR: o_alu_op = `ALU_OR;
+            `FUNCT3_AND: o_alu_op = `ALU_AND;
+            default: o_alu_op = 4'b0000; // Default case to avoid latches
+        endcase
+    end
+
+
     
 endmodule

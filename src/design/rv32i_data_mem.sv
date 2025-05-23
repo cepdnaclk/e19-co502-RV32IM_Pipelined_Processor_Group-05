@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05/08/2025 10:37:41 AM
+// Create Date: 05/23/2025 08:25:57 AM
 // Design Name: 
-// Module Name: rv32i_cu
+// Module Name: rv32i_data_mem
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,13 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module rv32i_cu(
-        input logic [6:0] i_opcode,
-        output logic o_reg_write_en,
-        output logic o_mem_write_en,
-        output logic o_mem_read_en,
-        output logic o_mem_to_reg,
-        output logic o_alu_src_1,
-        output logic [1:0] o_alu_src_2
+module rv32i_data_mem(
+
     );
 endmodule

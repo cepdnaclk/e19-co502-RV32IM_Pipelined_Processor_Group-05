@@ -81,3 +81,13 @@
 // MEM to REG definitions
 `define MEM_TO_REG_ALU 1'b0
 `define MEM_TO_REG_MEM 1'b1
+
+// define Data memory functions
+`define FUNCT3_LB 3'b000
+`define FUNCT3_LH 3'b001
+`define FUNCT3_LW 3'b010
+`define FUNCT3_LBU 3'b100
+`define FUNCT3_LHU 3'b101
+`define FUNCT3_SB 3'b000
+`define FUNCT3_SH 3'b001
+`define FUNCT3_SW 3'b010

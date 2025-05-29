@@ -137,13 +137,28 @@ module rv32i_core(
         .i_imm(imm)
     );
 
+    // Data memory
+    logic [WIDTH-1:0] dm_data_out;
+
+    rv32i_data_mem #(
+        .WIDTH(WIDTH)
+    ) data_mem (
+        .clk(clk),
+        .rst(rst),
+        .i_dm_we(mem_write_en),
+        .i_dm_addr(alu_result),
+        .i_dm_data_in(rs2_data),
+        .i_dm_func3(funct3),
+        .o_dm_data_out(dm_data_out)
+    );
+
     // assign rd_data = alu_result; // for now, just write back ALU result
     rv32i_write_back_mux #(
         .WIDTH(WIDTH)
     ) wb_mux (
         .o_wb_data(rd_data),
         .i_alu_result(alu_result),
-        .i_mem_data(32'b0), // TODO: connect to memory data
+        .i_mem_data(dm_data_out),
         .i_opcode(opcode)
     );
 

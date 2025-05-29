@@ -63,6 +63,17 @@ module rv32i_cu (
                 o_reg_write_en = 1;
                 o_alu_src_b = `ALU_SRC_B_IMM;
             end
+            `OPCODE_STORE: begin
+                o_mem_write_en = 1;
+                o_alu_src_a = `ALU_SRC_A_REG;
+                o_alu_src_b = `ALU_SRC_B_IMM;
+            end
+            `OPCODE_LOAD: begin
+                o_reg_write_en = 1;
+                // o_mem_read_en = 1;
+                o_alu_src_a = `ALU_SRC_A_REG;
+                o_alu_src_b = `ALU_SRC_B_IMM;
+            end
         endcase
     end
 endmodule

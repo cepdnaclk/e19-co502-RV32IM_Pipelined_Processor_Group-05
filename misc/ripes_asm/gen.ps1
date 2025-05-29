@@ -5,14 +5,15 @@ param(
 )
 
 $inputPath = $null
-$outputPath = "name.hex"
+$outputPath = "out.hex"
 
 for ($i = 0; $i -lt $args.Length; $i++) {
     if ($args[$i] -eq "-o" -and ($i + 1) -lt $args.Length) {
         $outputPath = $args[$i + 1]
         $i++
-    } elseif (-not $args[$i].StartsWith("-")) {
-        $inputPath = $args[$i]
+    } elseif ($args[$i] -eq "-i" -and ($i + 1) -lt $args.Length) {
+        $inputPath = $args[$i + 1]
+        $i++
     }
 }
 

@@ -22,15 +22,16 @@
 `include "rv32i_decoder_header.vh"
 
 module rv32i_decoder (
-    input logic [31:0] i_inst,
-    output logic [4:0] o_rs1_addr,
-    output logic [4:0] o_rs2_addr,
-    output logic [4:0] o_rd_addr,
+    input  logic [31:0] i_inst,
+    output logic [ 4:0] o_rs1_addr,
+    output logic [ 4:0] o_rs2_addr,
+    output logic [ 4:0] o_rd_addr,
     output logic [31:0] o_imm,
-    output logic [2:0] o_funct3,
-    output logic [6:0] o_funct7,
-    output logic [6:0] o_opcode,
-    output logic [3:0] o_alu_op
+    output logic [ 2:0] o_funct3,
+    output logic [ 6:0] o_funct7,
+    output logic [ 6:0] o_opcode,
+    output logic [ `ALU_OP_WIDTH-1:0] o_alu_op,
+    output logic [ 3:0] o_branch_op
 );
 
     always_comb begin
@@ -44,17 +45,18 @@ module rv32i_decoder (
 
     // Immediate generation
     logic [31:0] imm;
-    
+
     always_comb begin
-        case (o_opcode)
-            `OPCODE_ITYPE, `OPCODE_LOAD, `OPCODE_JALR: imm = {{20{i_inst[31]}}, i_inst[31:20]};
-            `OPCODE_STORE: imm = {{20{i_inst[31]}}, i_inst[31:25], i_inst[11:7]};
+        unique case (o_opcode)
+            `OPCODE_LUI, `OPCODE_AUIPC: imm = {i_inst[31], i_inst[30:12], {12{1'b0}}};  // (U-type)
+            `OPCODE_ITYPE, `OPCODE_LOAD, `OPCODE_JALR:
+            imm = {{21{i_inst[31]}}, i_inst[30:20]};  // (I-type)
+            `OPCODE_STORE: imm = {{21{i_inst[31]}}, i_inst[30:25], i_inst[11:7]};  // (S-type)
             `OPCODE_BRANCH:
-            imm = {{19{i_inst[31]}}, i_inst[31], i_inst[7], i_inst[30:25], i_inst[11:8], 1'b0};
+            imm = {{20{i_inst[31]}}, i_inst[7], i_inst[30:25], i_inst[11:8], 1'b0};  // (B-type)
             `OPCODE_JAL:
-            imm = {{11{i_inst[31]}}, i_inst[31], i_inst[19:12], i_inst[20], i_inst[30:21], 1'b0};
-            `OPCODE_LUI, `OPCODE_AUIPC: imm = {i_inst[31:12], 12'h000};
-            `OPCODE_SYSTEM, `OPCODE_FENCE: imm = {20'b0, i_inst[31:20]};
+            imm = {{12{i_inst[31]}}, i_inst[19:12], i_inst[20], i_inst[30:21], 1'b0};  // (J-type)
+            `OPCODE_SYSTEM, `OPCODE_FENCE: imm = 0;
             default: imm = 0;
         endcase
     end
@@ -63,19 +65,44 @@ module rv32i_decoder (
 
     // ALU operation arithmetic logic
     always_comb begin
-        case (o_funct3)
-            `FUNCT3_ADD_SUB: o_alu_op = (o_funct7[5]) ? `ALU_SUB : `ALU_ADD;
-            `FUNCT3_SLL: o_alu_op = `ALU_SLL;
-            `FUNCT3_SLT: o_alu_op = `ALU_SLT;
-            `FUNCT3_SLTU: o_alu_op = `ALU_SLTU;
-            `FUNCT3_XOR: o_alu_op = `ALU_XOR;
-            `FUNCT3_SRL_SRA: o_alu_op = (o_funct7[5]) ? `ALU_SRA : `ALU_SRL;
-            `FUNCT3_OR: o_alu_op = `ALU_OR;
-            `FUNCT3_AND: o_alu_op = `ALU_AND;
-            default: o_alu_op = 4'b0000; // Default case to avoid latches
+        // if ((o_opcode == `OPCODE_RTYPE) || (o_opcode == `OPCODE_ITYPE)) begin
+        unique case (o_opcode)
+            `OPCODE_RTYPE, `OPCODE_ITYPE: begin
+                unique case (o_funct3)
+                    `FUNCT3_ADD_SUB:
+                    o_alu_op = (o_funct7[5] && (o_opcode == `OPCODE_RTYPE)) ? `ALU_SUB : `ALU_ADD;
+                    `FUNCT3_SLL: o_alu_op = `ALU_SLL;
+                    `FUNCT3_SLT: o_alu_op = `ALU_SLT;
+                    `FUNCT3_SLTU: o_alu_op = `ALU_SLTU;
+                    `FUNCT3_XOR: o_alu_op = `ALU_XOR;
+                    `FUNCT3_SRL_SRA: o_alu_op = (o_funct7[5]) ? `ALU_SRA : `ALU_SRL;
+                    `FUNCT3_OR: o_alu_op = `ALU_OR;
+                    `FUNCT3_AND: o_alu_op = `ALU_AND;
+                    default: o_alu_op = 4'b0000;  // Default case to avoid latches
+                endcase
+            end
+            `OPCODE_LUI, `OPCODE_AUIPC: o_alu_op = `ALU_LUI;  // LUI and AUIPC use a specific ALU operation
+            default: o_alu_op = `ALU_ADD;  // Default case
         endcase
     end
 
+    // ALU operation branch logic
+    always_comb begin
+        // if (o_opcode == `OPCODE_BRANCH) begin
+        unique case (o_funct3)
+            `FUNCT3_EQ: o_branch_op = `ALU_EQ;
+            `FUNCT3_NEQ: o_branch_op = `ALU_NEQ;
+            `FUNCT3_LT: o_branch_op = `ALU_LT;
+            `FUNCT3_GE: o_branch_op = `ALU_GE;
+            `FUNCT3_LTU: o_branch_op = `ALU_LTU;
+            `FUNCT3_GEU: o_branch_op = `ALU_GEU;
+            default: o_branch_op = 3'b000;  // Default case to avoid latches
+        endcase
+        // end else begin
+        //     o_branch_op = 3'b000;  // Default case to avoid latches
+        // end
+    end
 
-    
+
+
 endmodule

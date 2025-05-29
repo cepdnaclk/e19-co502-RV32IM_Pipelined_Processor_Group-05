@@ -19,6 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+`include "rv32i_decoder_header.vh"
 
 module rv32i_core(
         input logic clk, rst
@@ -62,6 +63,8 @@ module rv32i_core(
     logic [2:0] funct3;
     logic [6:0] funct7;
     logic [6:0] opcode;
+    logic [`ALU_OP_WIDTH-1:0] alu_op;
+    logic [3:0] branch_op;
 
     rv32i_decoder decoder (
         .i_inst(inst),
@@ -71,7 +74,27 @@ module rv32i_core(
         .o_imm(imm),
         .o_funct3(funct3),
         .o_funct7(funct7),
-        .o_opcode(opcode)
+        .o_opcode(opcode),
+        .o_alu_op(alu_op),
+        .o_branch_op(branch_op)
+    );
+
+    // control unit
+    logic reg_write_en;
+    logic mem_write_en;
+    logic mem_read_en;
+    logic mem_to_reg;
+    logic alu_src_a;
+    logic [1:0] alu_src_b;
+
+    rv32i_cu control_unit (
+        .i_opcode(opcode),
+        .o_reg_write_en(reg_write_en),
+        .o_mem_write_en(mem_write_en),
+        .o_mem_read_en(mem_read_en),
+        .o_mem_to_reg(mem_to_reg),
+        .o_alu_src_a(alu_src_a),
+        .o_alu_src_b(alu_src_b)
     );
 
     // register file
@@ -97,15 +120,19 @@ module rv32i_core(
 
     // ALU
     logic [WIDTH-1:0] alu_result;
+    logic take_branch;
 
     rv32i_alu #(
         .WIDTH(WIDTH)
     ) alu (
         .o_result(alu_result),
-        .i_opcode(opcode),
-        .i_funct3(funct3),
-        .i_funct7(funct7),
+        .o_take_branch(take_branch),
+        .i_alu_op(alu_op),
+        .i_branch_op(branch_op),
+        .i_alu_src_a(alu_src_a),
         .i_rs1_data(rs1_data),
+        .i_pc(pc),
+        .i_alu_src_b(alu_src_b),
         .i_rs2_data(rs2_data),
         .i_imm(imm)
     );

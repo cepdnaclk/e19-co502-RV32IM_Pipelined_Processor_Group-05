@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05/15/2025 01:18:58 PM
+// Create Date: 05/23/2025 07:11:28 PM
 // Design Name: 
-// Module Name: rv32i_decoder_tb
+// Module Name: rv32i_cu_tb
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -21,8 +21,7 @@
 
 `include "rv32i_decoder_header.vh"
 
-module rv32i_decoder_tb;
-
+module rv32i_cu_tb;
     localparam WIDTH = 32;  //default bit width
     localparam CLOCK = 10;  // clock period in ns
 
@@ -46,6 +45,15 @@ module rv32i_decoder_tb;
     logic [`ALU_OP_WIDTH-1:0] o_alu_op;
     logic [2:0] o_branch_op;
 
+    // ports for the control unit
+    logic [6:0] i_opcode;
+    logic o_reg_write_en;
+    logic o_mem_write_en;
+    logic o_mem_read_en;
+    logic o_mem_to_reg;
+    logic o_alu_src_a;
+    logic [1:0] o_alu_src_b;
+
 
     // Instantiate the instruction memory
     rv32i_inst_mem #(
@@ -56,7 +64,16 @@ module rv32i_decoder_tb;
 
     assign i_inst = o_inst;
 
+    // Instantiate the decoder
     rv32i_decoder uut_decoder (
+        .*
+    );
+
+    // connect the opcode to the control unit
+    assign i_opcode = o_opcode;
+
+    // Instantiate the control unit
+    rv32i_cu uut_cu (
         .*
     );
 
@@ -82,8 +99,10 @@ module rv32i_decoder_tb;
     end
 
     initial begin
-        $dumpfile("rv32i_decoder_tb.vcd");
+        $dumpfile("rv32i_cu_tb.vcd");
         $dumpvars(0, uut_decoder);
         $dumpvars(0, uut_inst_mem);
+        $dumpvars(0, uut_cu);
     end
+
 endmodule

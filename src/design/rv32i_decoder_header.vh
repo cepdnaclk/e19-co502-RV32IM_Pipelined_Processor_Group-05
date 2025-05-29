@@ -1,19 +1,25 @@
-// `define ALU_WIDTH 14
+`define ALU_OP_WIDTH 5
 
-`define ALU_ADD 0
-`define ALU_SUB 1
-`define ALU_SLT 2
-`define ALU_SLTU 3
-`define ALU_XOR 4
-`define ALU_OR 5
-`define ALU_AND 6
-`define ALU_SLL 7
-`define ALU_SRL 8
-`define ALU_SRA 9
-`define ALU_EQ 10
-`define ALU_NEQ 11
-`define ALU_GE 12
-`define ALU_GEU 13
+`define ALU_ADD  5'd0
+`define ALU_SUB  5'd1
+`define ALU_SLT  5'd2
+`define ALU_SLTU 5'd3
+`define ALU_XOR  5'd4
+`define ALU_OR   5'd5
+`define ALU_AND  5'd6
+`define ALU_SLL  5'd7
+`define ALU_SRL  5'd8
+`define ALU_SRA  5'd9
+
+`define ALU_EQ   5'd10
+`define ALU_NEQ  5'd11
+`define ALU_LT   5'd12
+`define ALU_GE   5'd13
+`define ALU_LTU  5'd14
+`define ALU_GEU  5'd15
+
+// Load upper immediate bypass
+`define ALU_LUI  5'd16
 
 // `define OPCODE_WIDTH 9
 
@@ -56,9 +62,22 @@
 `define FUNCT3_OR 3'b110
 `define FUNCT3_AND 3'b111
 
-// `define FUNCT3_EQ 3'b000
-// `define FUNCT3_NEQ 3'b001
-// `define FUNCT3_LT 3'b100
-// `define FUNCT3_GE 3'b101
-// `define FUNCT3_LTU 3'b110
-// `define FUNCT3_GEU 3'b111 
+`define FUNCT3_EQ 3'b000
+`define FUNCT3_NEQ 3'b001
+`define FUNCT3_LT 3'b100
+`define FUNCT3_GE 3'b101
+`define FUNCT3_LTU 3'b110
+`define FUNCT3_GEU 3'b111 
+
+// ALU src B definitions
+`define ALU_SRC_B_REG 2'b00
+`define ALU_SRC_B_IMM 2'b01
+`define ALU_SRC_B_PL4 2'b10     // PC + 4
+
+// ALU src A definitions
+`define ALU_SRC_A_REG 1'b0
+`define ALU_SRC_A_PC 1'b1
+
+// MEM to REG definitions
+`define MEM_TO_REG_ALU 1'b0
+`define MEM_TO_REG_MEM 1'b1

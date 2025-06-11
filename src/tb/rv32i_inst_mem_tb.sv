@@ -33,8 +33,6 @@ module rv32i_inst_mem_tb;
     rv32i_inst_mem #(
         .INST_WIDTH(WIDTH)
     ) uut (
-        .clk(clk),
-        .rst(rst),
         .i_addr(i_addr),
         .o_inst(o_inst)
     );

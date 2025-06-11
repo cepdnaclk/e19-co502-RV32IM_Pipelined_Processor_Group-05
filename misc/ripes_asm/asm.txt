@@ -1,8 +1,11 @@
-    0:        00000093        addi x1 x0 0
-    4:        ffb00113        addi x2 x0 -5
-    8:        00202023        sw x2 0 x0
-    c:        00002183        lw x3 0 x0
-    10:        00005203        lhu x4 0 x0
-    14:        00004283        lbu x5 0 x0
-    18:        00001303        lh x6 0 x0
-    1c:        00000383        lb x7 0 x0
+
+00000000 <_start>:
+    0:        00000517        auipc x10 0x0 <_start>
+    4:        01050513        addi x10 x10 16
+    8:        000500e7        jalr x1 x10 0
+
+0000000c <end_loop>:
+    c:        0000006f        jal x0 0 <end_loop>
+
+00000010 <my_function>:
+    10:        00008067        jalr x0 x1 0

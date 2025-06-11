@@ -1,38 +1,41 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 05/08/2025 10:37:41 AM
-// Design Name: 
+// Design Name:
 // Module Name: rv32i_decoder
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 `include "rv32i_decoder_header.vh"
 
 module rv32i_decoder (
-    input  logic [31:0] i_inst,
-    output logic [ 4:0] o_rs1_addr,
-    output logic [ 4:0] o_rs2_addr,
-    output logic [ 4:0] o_rd_addr,
+    input logic [31:0] i_inst,
+    output logic [4:0] o_rs1_addr,
+    output logic [4:0] o_rs2_addr,
+    output logic [4:0] o_rd_addr,
     output logic [31:0] o_imm,
-    output logic [ 2:0] o_funct3,
-    output logic [ 6:0] o_funct7,
-    output logic [ 6:0] o_opcode,
-    output logic [ `ALU_OP_WIDTH-1:0] o_alu_op,
-    output logic [ 3:0] o_branch_op
+    output logic [2:0] o_funct3,
+    output logic [6:0] o_opcode,
+    output logic [`ALU_OP_WIDTH-1:0] o_alu_op,
+    output logic [`ALU_OP_WIDTH-1:0] o_branch_op
 );
+
+    // Immediate generation
+    logic [31:0] imm;
+    logic [ 6:0] o_funct7;
 
     always_comb begin
         o_opcode   = i_inst[6:0];
@@ -43,8 +46,6 @@ module rv32i_decoder (
         o_rd_addr  = i_inst[11:7];
     end
 
-    // Immediate generation
-    logic [31:0] imm;
 
     always_comb begin
         unique case (o_opcode)
@@ -65,7 +66,6 @@ module rv32i_decoder (
 
     // ALU operation arithmetic logic
     always_comb begin
-        // if ((o_opcode == `OPCODE_RTYPE) || (o_opcode == `OPCODE_ITYPE)) begin
         unique case (o_opcode)
             `OPCODE_RTYPE, `OPCODE_ITYPE: begin
                 unique case (o_funct3)
@@ -78,31 +78,28 @@ module rv32i_decoder (
                     `FUNCT3_SRL_SRA: o_alu_op = (o_funct7[5]) ? `ALU_SRA : `ALU_SRL;
                     `FUNCT3_OR: o_alu_op = `ALU_OR;
                     `FUNCT3_AND: o_alu_op = `ALU_AND;
-                    default: o_alu_op = 4'b0000;  // Default case to avoid latches
+                    default: o_alu_op = 4'b0000;  // Defaultcase to avoid latches
                 endcase
             end
-            `OPCODE_LUI, `OPCODE_AUIPC: o_alu_op = `ALU_LUI;  // LUI and AUIPC use a specific ALU operation
-            default: o_alu_op = `ALU_ADD;  // Default case
+            `OPCODE_LUI:   o_alu_op = `ALU_LUI;  // LUI just forwards the immediate
+            `OPCODE_AUIPC: o_alu_op = `ALU_ADD;  // AUIPC adds the immediate to the PC
+            default:       o_alu_op = `ALU_ADD;  // Defaultcase
         endcase
     end
 
-    // ALU operation branch logic
+    // Branch condition logic
     always_comb begin
-        // if (o_opcode == `OPCODE_BRANCH) begin
-        unique case (o_funct3)
-            `FUNCT3_EQ: o_branch_op = `ALU_EQ;
-            `FUNCT3_NEQ: o_branch_op = `ALU_NEQ;
-            `FUNCT3_LT: o_branch_op = `ALU_LT;
-            `FUNCT3_GE: o_branch_op = `ALU_GE;
-            `FUNCT3_LTU: o_branch_op = `ALU_LTU;
-            `FUNCT3_GEU: o_branch_op = `ALU_GEU;
-            default: o_branch_op = 3'b000;  // Default case to avoid latches
-        endcase
-        // end else begin
-        //     o_branch_op = 3'b000;  // Default case to avoid latches
-        // end
+        if (o_opcode == `OPCODE_BRANCH) begin
+            unique case (o_funct3)
+                `FUNCT3_EQ:  o_branch_op = `ALU_EQ;
+                `FUNCT3_NEQ: o_branch_op = `ALU_NEQ;
+                `FUNCT3_LT:  o_branch_op = `ALU_LT;
+                `FUNCT3_GE:  o_branch_op = `ALU_GE;
+                `FUNCT3_LTU: o_branch_op = `ALU_LTU;
+                `FUNCT3_GEU: o_branch_op = `ALU_GEU;
+                default:     o_branch_op = `ALU_ADD;  // Defaultcase to avoid latches
+            endcase
+        end else o_branch_op = 'd0;  //NOP
     end
-
-
 
 endmodule

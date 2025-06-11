@@ -27,18 +27,16 @@ module rv32i_write_back_mux #(
     output logic [WIDTH-1:0] o_wb_data,
     input logic [WIDTH-1:0] i_alu_result,
     input logic [WIDTH-1:0] i_mem_data,
-    input logic [6:0] i_opcode,
-    input logic [WIDTH-1:0] pc
+    input logic [WIDTH-1:0] i_pc,
+    input logic [1:0] i_wb_sel
     );
 
-    logic i_mem_to_reg;
-    assign i_mem_to_reg = (i_opcode == `OPCODE_LOAD) ? 1'b1 : 1'b0;
-
     always_comb begin
-        if (i_mem_to_reg) begin
-            o_wb_data = i_mem_data;
-        end else begin
-            o_wb_data = i_alu_result;
-        end
+        unique case (i_wb_sel)
+            `WB_SEL_ALU: o_wb_data = i_alu_result;  // ALU result
+            `WB_SEL_MEM: o_wb_data = i_mem_data;    // Memory data
+            `WB_SEL_PC:  o_wb_data = i_pc;           // Program counter
+            default:     o_wb_data = 'd0;            // Default case to avoid latches
+        endcase
     end
 endmodule

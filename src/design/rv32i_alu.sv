@@ -45,26 +45,9 @@ module rv32i_alu #(
             `ALU_SRC_B_PL4: rs2 = 32'd4;
             default: rs2 = i_rs2_data;
         endcase
-    
+
     logic [4:0] shamt;
     assign shamt = rs2[4:0];
-
-    // always_comb begin
-    //     rs1   = i_rs1_data;
-    //     rs2   = (opcode_rtype) ? i_rs2_data : i_imm;
-    //     shamt = (opcode_rtype) ? rs2[4:0] : i_imm[4:0];
-    //     case (i_funct3)
-    //         `FUNCT3_ADD_SUB: o_result = (i_funct7[5] & opcode_rtype) ? (rs1 - rs2) : (rs1 + rs2);
-    //         `FUNCT3_SLL: o_result = rs1 << shamt;
-    //         `FUNCT3_SLT: o_result = ($signed(rs1) < $signed(rs2));
-    //         `FUNCT3_SLTU: o_result = (rs1 < rs2);
-    //         `FUNCT3_XOR: o_result = rs1 ^ rs2;
-    //         `FUNCT3_SRL_SRA: o_result = (i_funct7[5]) ? ($signed(rs1) >>> shamt) : (rs1 >> shamt);
-    //         `FUNCT3_OR: o_result = rs1 | rs2;
-    //         `FUNCT3_AND: o_result = rs1 & rs2;
-    //         default: o_result = 0;  // Default case to avoid latches
-    //     endcase
-    // end
 
     // arithmetic operation logic
     always_comb begin
@@ -72,14 +55,15 @@ module rv32i_alu #(
             `ALU_ADD:  o_result = (rs1 + rs2);
             `ALU_SUB:  o_result = (rs1 - rs2);
             `ALU_SLL:  o_result = rs1 << shamt;
-            `ALU_SLT:  o_result = ($signed(rs1) < $signed(rs2));
-            `ALU_SLTU: o_result = (rs1 < rs2);
+            `ALU_SLT:  o_result = {{WIDTH - 1{1'b0}}, ($signed(rs1) < $signed(rs2))};
+            `ALU_SLTU: o_result = {{WIDTH - 1{1'b0}}, (rs1 < rs2)};
             `ALU_XOR:  o_result = rs1 ^ rs2;
             `ALU_SRL:  o_result = (rs1 >> shamt);
             `ALU_SRA:  o_result = ($signed(rs1) >>> shamt);
             `ALU_OR:   o_result = rs1 | rs2;
             `ALU_AND:  o_result = rs1 & rs2;
             `ALU_LUI:  o_result = rs2;  // LUI operation
+            default:   o_result = 0;  // Default case to avoid latches
         endcase
     end
 
@@ -92,7 +76,7 @@ module rv32i_alu #(
             `ALU_GE:  o_take_branch = ($signed(rs1) >= $signed(rs2));
             `ALU_LTU: o_take_branch = (rs1 < rs2);
             `ALU_GEU: o_take_branch = (rs1 >= rs2);
-            default: o_take_branch = 1'b0;
+            default:  o_take_branch = 1'b0;
         endcase
     end
 endmodule

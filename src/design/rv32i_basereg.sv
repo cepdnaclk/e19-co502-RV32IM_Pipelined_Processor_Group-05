@@ -40,7 +40,6 @@ module rv32i_basereg #(
     always_comb begin
         o_rs1_data  = reg_file[i_rs1_addr];
         o_rs2_data  = reg_file[i_rs2_addr];
-        reg_file[0] = 0;  // Register 0 is hardwired to 0
     end
 
     always_ff @(posedge clk or posedge rst) begin
@@ -51,6 +50,8 @@ module rv32i_basereg #(
         end else if (i_we && i_rd_addr != 0) begin
             reg_file[i_rd_addr] <= i_rd_data;
         end
+
+        reg_file[0] <= 0; // Register 0 is hardwired to 0
     end
 
 endmodule

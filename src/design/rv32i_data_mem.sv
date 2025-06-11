@@ -42,7 +42,7 @@ module rv32i_data_mem #(
     logic LOAD_sign;
 
     logic [ADDR_WIDTH-1:0] i_dm_addr_aligned;
-    assign i_dm_addr_aligned = i_dm_addr[ADDR_WIDTH-1:2];
+    assign i_dm_addr_aligned = {2'b00, i_dm_addr[ADDR_WIDTH-1:2]};
 
     always_comb begin
 

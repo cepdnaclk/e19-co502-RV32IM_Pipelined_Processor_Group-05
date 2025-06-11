@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 05/17/2025 12:03:51 AM
-// Design Name: 
+// Design Name:
 // Module Name: rv32i_alu
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 `include "rv32i_decoder_header.vh"
@@ -25,9 +25,7 @@ module rv32i_alu #(
     parameter WIDTH = 32
 ) (
     output logic [WIDTH-1:0] o_result,
-    output logic o_take_branch,
     input logic [`ALU_OP_WIDTH-1:0] i_alu_op,
-    input logic [3:0] i_branch_op,
     input logic i_alu_src_a,
     input logic [WIDTH-1:0] i_rs1_data,
     input logic [WIDTH-1:0] i_pc,
@@ -36,14 +34,15 @@ module rv32i_alu #(
     input logic [WIDTH-1:0] i_imm
 );
 
-    logic [WIDTH-1:0] rs1, rs2;
+    logic [WIDTH-1:0] rs1;
+    logic [WIDTH-1:0] rs2;
     assign rs1 = (i_alu_src_a) ? i_pc : i_rs1_data;
 
     always_comb
         unique case (i_alu_src_b)
             `ALU_SRC_B_IMM: rs2 = i_imm;
             `ALU_SRC_B_PL4: rs2 = 32'd4;
-            default: rs2 = i_rs2_data;
+            default:        rs2 = i_rs2_data;
         endcase
 
     logic [4:0] shamt;
@@ -51,7 +50,8 @@ module rv32i_alu #(
 
     // arithmetic operation logic
     always_comb begin
-        case (i_alu_op)
+        o_result      = 'd0;  // Default value to avoid latches
+        unique case (i_alu_op)
             `ALU_ADD:  o_result = (rs1 + rs2);
             `ALU_SUB:  o_result = (rs1 - rs2);
             `ALU_SLL:  o_result = rs1 << shamt;

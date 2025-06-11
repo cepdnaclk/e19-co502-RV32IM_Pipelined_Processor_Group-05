@@ -23,7 +23,6 @@
 module rv32i_inst_mem #(
     parameter int INST_WIDTH = 32
 ) (
-    input logic clk, rst,
     input logic [INST_WIDTH-1:0] i_addr,
     output logic [INST_WIDTH-1:0] o_inst
 );
@@ -34,11 +33,6 @@ module rv32i_inst_mem #(
         $readmemh("mem_data.mem", inst_mem); // Load instructions from file
     end
 
-    always_ff @(posedge clk or posedge rst) begin
-        if (rst)
-            o_inst <= 0;
-        else
-            o_inst <= inst_mem[i_addr[INST_WIDTH-1:2]]; // Read instruction from memory
-    end
+    assign o_inst = inst_mem[i_addr[INST_WIDTH-1:2]]; // Read instruction from memory
 
 endmodule

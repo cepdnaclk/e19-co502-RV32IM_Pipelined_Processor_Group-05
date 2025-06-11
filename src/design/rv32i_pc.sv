@@ -23,14 +23,16 @@
 module rv32i_pc #(
     parameter int WIDTH = 32
 ) (
-    input logic clk, rst,
-    input logic [WIDTH-1:0] i_pc,
+    input logic clk,
+    rst,
+    i_pc_sel,
+    input logic [WIDTH-1:0] i_target_pc,
     output logic [WIDTH-1:0] o_pc
 );
 
-  always_ff @(posedge clk, posedge rst) begin
-    if (rst) o_pc <= 32'd0;
-    else o_pc <= i_pc;
-  end
+    always_ff @(posedge clk) begin
+        if (rst) o_pc <= 32'd0;
+        else o_pc <= (i_pc_sel) ? i_target_pc : o_pc + 32'd4;
+    end
 
 endmodule

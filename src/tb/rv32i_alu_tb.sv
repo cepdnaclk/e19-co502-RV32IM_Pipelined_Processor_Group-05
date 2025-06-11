@@ -34,7 +34,6 @@ module rv32i_alu_tb;
     logic [WIDTH-1:0] o_result;
     logic o_take_branch;
     logic [`ALU_OP_WIDTH-1:0] i_alu_op;
-    logic [3:0] i_branch_op;
     logic i_alu_src_a;
     logic [WIDTH-1:0] i_rs1_data;
     logic [WIDTH-1:0] i_pc;
@@ -77,7 +76,7 @@ module rv32i_alu_tb;
         i_alu_src_a = `ALU_SRC_A_REG; // use rs1
         i_alu_src_b = `ALU_SRC_B_REG; // use rs2
         i_pc = 32'h00000000; // PC value
-        i_branch_op = `ALU_EQ; // set branch operation to equality
+        i_alu_op = `ALU_EQ; // set branch operation to equality
         #CLOCK; // wait for ALU operation to complete
 
         // branch if x1 is not equal to x2
@@ -86,7 +85,7 @@ module rv32i_alu_tb;
         i_alu_src_a = `ALU_SRC_A_REG; // use rs1
         i_alu_src_b = `ALU_SRC_B_REG; // use rs2
         i_pc = 32'h00000000; // PC value
-        i_branch_op = `ALU_NEQ; // set branch operation to not equal
+        i_alu_op = `ALU_NEQ; // set branch operation to not equal
         #CLOCK; // wait for ALU operation to complete
 
 

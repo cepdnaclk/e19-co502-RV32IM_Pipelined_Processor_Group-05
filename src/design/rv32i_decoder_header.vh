@@ -82,6 +82,11 @@
 `define MEM_TO_REG_ALU 1'b0
 `define MEM_TO_REG_MEM 1'b1
 
+// Write Back Select definitions
+`define WB_SEL_ALU 2'b00
+`define WB_SEL_MEM 2'b01
+`define WB_SEL_PC  2'b10
+
 // define Data memory functions
 `define FUNCT3_LB 3'b000
 `define FUNCT3_LH 3'b001

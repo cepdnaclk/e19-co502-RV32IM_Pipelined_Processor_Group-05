@@ -11,7 +11,8 @@ for ($i = 0; $i -lt $args.Length; $i++) {
     if ($args[$i] -eq "-o" -and ($i + 1) -lt $args.Length) {
         $outputPath = $args[$i + 1]
         $i++
-    } elseif ($args[$i] -eq "-i" -and ($i + 1) -lt $args.Length) {
+    }
+    elseif ($args[$i] -eq "-i" -and ($i + 1) -lt $args.Length) {
         $inputPath = $args[$i + 1]
         $i++
     }
@@ -25,5 +26,12 @@ if (-not $inputPath) {
 Get-Content $inputPath | ForEach-Object {
     $fields = $_.Trim() -split '\s+'
     $fields = $fields | Where-Object { $_ -ne '' }
-    $fields[1]
+    # print fields as list
+    if ($fields.Count -gt 0) {
+        $fields = $fields | ForEach-Object { $_.Trim() }
+        # if fields[1] starts with '<' print nothing
+        if (-not ($fields[1] -and $fields[1].StartsWith('<'))) {
+            $fields[1]
+        }
+    }
 } | Set-Content $outputPath

@@ -30,9 +30,9 @@ module rv32i_inst_mem #(
     logic [INST_WIDTH-1:0] inst_mem [0:255]; // 256 instructions
 
     initial begin
-        $readmemh("mem_data.mem", inst_mem); // Load instructions from file
+        $readmemh("./mem_data.mem", inst_mem); // Load instructions from file
     end
 
-    assign o_inst = inst_mem[i_addr[INST_WIDTH-1:2]]; // Read instruction from memory
+    assign o_inst = inst_mem[i_addr[9:2]]; // Use lower 8 bits as index (word-aligned)
 
 endmodule

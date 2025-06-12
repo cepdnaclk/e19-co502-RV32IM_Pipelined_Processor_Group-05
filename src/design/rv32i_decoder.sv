@@ -78,7 +78,7 @@ module rv32i_decoder (
                     `FUNCT3_SRL_SRA: o_alu_op = (o_funct7[5]) ? `ALU_SRA : `ALU_SRL;
                     `FUNCT3_OR: o_alu_op = `ALU_OR;
                     `FUNCT3_AND: o_alu_op = `ALU_AND;
-                    default: o_alu_op = 4'b0000;  // Defaultcase to avoid latches
+                    default: o_alu_op = 5'd0;  // Defaultcase to avoid latches
                 endcase
             end
             `OPCODE_LUI:   o_alu_op = `ALU_LUI;  // LUI just forwards the immediate

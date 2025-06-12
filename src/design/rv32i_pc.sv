@@ -26,13 +26,16 @@ module rv32i_pc #(
     input logic clk,
     rst,
     i_pc_sel,
-    input logic [WIDTH-1:0] i_target_pc,
-    output logic [WIDTH-1:0] o_pc
+    input logic [WIDTH-1:0] i_jump_target,
+    output logic [WIDTH-1:0] o_pc, o_pc_plus_4
 );
+    
+    assign o_pc_plus_4 = o_pc + 32'd4;
 
     always_ff @(posedge clk) begin
         if (rst) o_pc <= 32'd0;
-        else o_pc <= (i_pc_sel) ? i_target_pc : o_pc + 32'd4;
+        else o_pc <= (i_pc_sel) ? i_jump_target : o_pc_plus_4;
     end
+
 
 endmodule

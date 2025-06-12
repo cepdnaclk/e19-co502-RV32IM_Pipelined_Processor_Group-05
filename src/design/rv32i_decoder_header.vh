@@ -11,12 +11,12 @@
 `define ALU_SRL  5'd8
 `define ALU_SRA  5'd9
 
-`define ALU_EQ   4'd10
-`define ALU_NEQ  4'd11
-`define ALU_LT   4'd12
-`define ALU_GE   4'd13
-`define ALU_LTU  4'd14
-`define ALU_GEU  4'd15
+`define ALU_EQ   5'd10
+`define ALU_NEQ  5'd11
+`define ALU_LT   5'd12
+`define ALU_GE   5'd13
+`define ALU_LTU  5'd14
+`define ALU_GEU  5'd15
 
 // Load upper immediate bypass
 `define ALU_LUI  5'd16

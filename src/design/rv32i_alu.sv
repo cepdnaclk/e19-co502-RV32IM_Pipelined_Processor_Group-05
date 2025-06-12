@@ -67,16 +67,4 @@ module rv32i_alu #(
         endcase
     end
 
-    // branch condition logic
-    always_comb begin
-        unique case (i_branch_op)
-            `ALU_EQ:  o_take_branch = (rs1 == rs2);
-            `ALU_NEQ: o_take_branch = (rs1 != rs2);
-            `ALU_LT:  o_take_branch = ($signed(rs1) < $signed(rs2));
-            `ALU_GE:  o_take_branch = ($signed(rs1) >= $signed(rs2));
-            `ALU_LTU: o_take_branch = (rs1 < rs2);
-            `ALU_GEU: o_take_branch = (rs1 >= rs2);
-            default:  o_take_branch = 1'b0;
-        endcase
-    end
 endmodule

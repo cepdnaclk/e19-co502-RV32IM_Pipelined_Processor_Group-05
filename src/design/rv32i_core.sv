@@ -31,7 +31,7 @@ module rv32i_core (
     // We define alu result here to be used for the program counter and other operations
     logic [WIDTH-1:0] alu_result;
     logic pc_sel;
-    logic [WIDTH-1:0] pc;
+    logic [WIDTH-1:0] pc, pc_plus_4;
 
     // Program Counter
     rv32i_pc #(
@@ -39,8 +39,9 @@ module rv32i_core (
     ) pc_unit (
         .clk(clk),
         .rst(rst),
-        .i_target_pc(alu_result),  // ALU result used for branch/jump offsets
+        .i_jump_target(alu_result),  // ALU result used for branch/jump offsets
         .o_pc(pc),
+        .o_pc_plus_4(pc_plus_4),
         .i_pc_sel(pc_sel)  // Branch decision from  branch unit
     );
 
@@ -163,7 +164,7 @@ module rv32i_core (
         .o_wb_data(rd_data),
         .i_alu_result(alu_result),
         .i_mem_data(dm_data_out),
-        .i_pc(pc + 4), // PC + 4 for JALR and JAL
+        .i_pc_plus_4(pc_plus_4), // PC + 4 for JALR and JAL
         .i_wb_sel(wb_sel)
     );
 

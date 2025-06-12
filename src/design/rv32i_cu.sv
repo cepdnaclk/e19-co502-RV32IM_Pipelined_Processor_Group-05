@@ -69,8 +69,8 @@ module rv32i_cu (
 
             end
             `OPCODE_JALR: begin
-                o_alu_src_a    = `ALU_SRC_A_PC;
-                o_alu_src_b    = `ALU_SRC_B_REG;
+                o_alu_src_a    = `ALU_SRC_A_REG;
+                o_alu_src_b    = `ALU_SRC_B_IMM;
                 o_do_jump      = 1;
                 o_reg_write_en = 1;
                 o_wb_sel       = `WB_SEL_PC; // JALR writes PC + 4 to the register
@@ -99,6 +99,17 @@ module rv32i_cu (
                 o_alu_src_b    = `ALU_SRC_B_IMM;
                 o_reg_write_en = 1;
                 o_wb_sel       = `WB_SEL_MEM; // Load writes memory data to the register
+            end
+            default: begin
+                // Default case, no operation
+                o_reg_write_en = 0;
+                o_mem_write_en = 0;
+                o_mem_read_en  = 0;
+                o_do_branch    = 0;
+                o_do_jump      = 0;
+                o_wb_sel       = `WB_SEL_ALU; // Default write back is ALU result
+                o_alu_src_a    = `ALU_SRC_A_REG;
+                o_alu_src_b    = `ALU_SRC_B_REG;
             end
         endcase
     end

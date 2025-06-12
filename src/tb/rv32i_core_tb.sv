@@ -43,7 +43,7 @@ module rv32i_core_tb;
         rst = 1'b0;
 
         // Wait for a few clock cycles
-        repeat (100) begin
+        repeat (300) begin
             #(CLOCK);
         end
 

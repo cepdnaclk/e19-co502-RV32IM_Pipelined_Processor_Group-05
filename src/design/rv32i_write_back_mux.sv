@@ -27,7 +27,7 @@ module rv32i_write_back_mux #(
     output logic [WIDTH-1:0] o_wb_data,
     input logic [WIDTH-1:0] i_alu_result,
     input logic [WIDTH-1:0] i_mem_data,
-    input logic [WIDTH-1:0] i_pc,
+    input logic [WIDTH-1:0] i_pc_plus_4,
     input logic [1:0] i_wb_sel
     );
 
@@ -35,7 +35,7 @@ module rv32i_write_back_mux #(
         unique case (i_wb_sel)
             `WB_SEL_ALU: o_wb_data = i_alu_result;  // ALU result
             `WB_SEL_MEM: o_wb_data = i_mem_data;    // Memory data
-            `WB_SEL_PC:  o_wb_data = i_pc;           // Program counter
+            `WB_SEL_PC:  o_wb_data = i_pc_plus_4;           // Program counter
             default:     o_wb_data = 'd0;            // Default case to avoid latches
         endcase
     end

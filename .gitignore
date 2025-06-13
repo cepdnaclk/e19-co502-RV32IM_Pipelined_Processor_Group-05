@@ -26,3 +26,4 @@ vivado_project/*
 
 misc/RISCV-RV32I-Assembler/rvi
 *.out
+*.vcd

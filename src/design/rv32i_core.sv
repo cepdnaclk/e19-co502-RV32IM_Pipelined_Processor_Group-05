@@ -80,7 +80,6 @@ module rv32i_core (
     logic reg_write_en;
     logic mem_write_en;
     logic mem_read_en;
-    logic mem_to_reg;
     logic alu_src_a;
     logic do_branch, do_jump;
     logic [1:0] alu_src_b, wb_sel;

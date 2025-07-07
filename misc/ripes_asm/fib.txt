@@ -1,0 +1,21 @@
+
+00000000 <_start>:
+    0:        00000293        addi x5 x0 0
+    4:        00100313        addi x6 x0 1
+    8:        00200393        addi x7 x0 2
+    c:        00700413        addi x8 x0 7
+    10:        10000113        addi x2 x0 256
+
+00000014 <loop>:
+    14:        00744c63        blt x8 x7 24 <done>
+    18:        006284b3        add x9 x5 x6
+    1c:        00030293        addi x5 x6 0
+    20:        00048313        addi x6 x9 0
+    24:        00138393        addi x7 x7 1
+    28:        fedff06f        jal x0 -20 <loop>
+
+0000002c <done>:
+    2c:        fe912e23        sw x9 -4 x2
+
+00000030 <halt>:
+    30:        0000006f        jal x0 0 <halt>

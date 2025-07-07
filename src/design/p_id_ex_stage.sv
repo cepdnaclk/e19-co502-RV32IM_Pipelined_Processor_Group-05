@@ -54,29 +54,28 @@ module p_id_ex_stage (
     output logic [2:0] o_funct3,
     output logic [6:0] o_opcode,
     output logic [`ALU_OP_WIDTH-1:0] o_alu_op,
-    output logic [`ALU_OP_WIDTH-1:0] o_branch_op
+    output logic [`ALU_OP_WIDTH-1:0] o_branch_op,
+
+    // debug
+    output logic [31:0] o_debug_inst
 );
 
     localparam WIDTH = 32;
 
-    // Pipeline registers
+    // DEBUG
+    logic [WIDTH-1:0] DEBUG_INST;
+    assign DEBUG_INST = i_inst;
+
+    // bypass from previous stage
     p_reg #(
-        .WIDTH(WIDTH)
-    ) p_pc_plus_4_reg (
-        .d(i_pc_plus_4),
-        .q(o_pc_plus_4),
+        .WIDTH(96)
+    ) p_bypass_reg (
+        .d({i_pc_plus_4, i_pc, i_inst}),
+        .q({o_pc_plus_4, o_pc, o_debug_inst}),
         .*
     );
 
-    p_reg #(
-        .WIDTH(WIDTH)
-    ) p_pc_reg (
-        .d(i_pc),
-        .q(o_pc),
-        .*
-    );
-
-    // Internal signals
+    // Internal signals for base reg
     logic [31:0] w_imm, w_rs1_data, w_rs2_data;
 
     p_reg #(
@@ -102,8 +101,10 @@ module p_id_ex_stage (
         .*
     );
 
-    // Internal signal
+    // Internal signal for decorder
     logic [4:0] w_rd_addr;
+    logic [2:0] w_funct3;
+    logic [`ALU_OP_WIDTH-1:0] w_alu_op, w_branch_op;
 
     p_reg #(
         .WIDTH(5)
@@ -113,10 +114,6 @@ module p_id_ex_stage (
         .*
     );
 
-    // Internal signals
-    logic [2:0] w_funct3;
-    logic [`ALU_OP_WIDTH-1:0] w_alu_op, w_branch_op;
-
     p_reg #(
         .WIDTH(3)
     ) p_funct3_reg (
@@ -124,6 +121,7 @@ module p_id_ex_stage (
         .q(o_funct3),
         .*
     );
+
     p_reg #(
         .WIDTH(`ALU_OP_WIDTH)
     ) p_alu_op_reg (
@@ -131,6 +129,7 @@ module p_id_ex_stage (
         .q(o_alu_op),
         .*
     );
+    
     p_reg #(
         .WIDTH(`ALU_OP_WIDTH)
     ) p_branch_op_reg (
@@ -140,11 +139,25 @@ module p_id_ex_stage (
     );
 
     // Internal signals
+    logic w_reg_write_en;
+    logic w_mem_write_en;
+    logic w_mem_read_en;
+    logic w_alu_src_a;
+    logic w_do_branch, w_do_jump;
+    logic [1:0] w_alu_src_b, w_wb_sel;
+
+    p_reg #(
+        .WIDTH(10)
+    ) p_control_unit_reg (
+        .d({w_reg_write_en, w_mem_write_en, w_mem_read_en, w_alu_src_a, w_alu_src_b, w_do_branch, w_do_jump, w_wb_sel}),
+        .q({o_reg_write_en, o_mem_write_en, o_mem_read_en, o_alu_src_a, o_alu_src_b, o_do_branch, o_do_jump, o_wb_sel}),
+        .*
+    );
+
+    // Internal signals
     logic [6:0] w_opcode;
     logic [4:0] w_rs1_addr, w_rs2_addr;
-
-    // bypass signals
-    logic [31:0] w_pc_plus_4, w_pc;
+    assign o_opcode = w_opcode;
 
     rv32i_decoder decoder (
         .i_inst(i_inst),
@@ -160,14 +173,14 @@ module p_id_ex_stage (
 
     rv32i_cu control_unit (
         .i_opcode(w_opcode),
-        .o_reg_write_en(reg_write_en),
-        .o_mem_write_en(mem_write_en),
-        .o_mem_read_en(mem_read_en),
-        .o_alu_src_a(alu_src_a),
-        .o_alu_src_b(alu_src_b),
-        .o_do_branch(do_branch),
-        .o_do_jump(do_jump),
-        .o_wb_sel(wb_sel)
+        .o_reg_write_en(w_reg_write_en),
+        .o_mem_write_en(w_mem_write_en),
+        .o_mem_read_en(w_mem_read_en),
+        .o_alu_src_a(w_alu_src_a),
+        .o_alu_src_b(w_alu_src_b),
+        .o_do_branch(w_do_branch),
+        .o_do_jump(w_do_jump),
+        .o_wb_sel(w_wb_sel)
     );
 
     rv32i_basereg #(
@@ -181,6 +194,6 @@ module p_id_ex_stage (
         .i_rs1_addr(w_rs1_addr),
         .i_rs2_addr(w_rs2_addr),
         .o_rs1_data(w_rs1_data),
-        .o_rs2_data(w_rs1_data)
+        .o_rs2_data(w_rs2_data)
     );
 endmodule

@@ -27,14 +27,19 @@ module p_if_id_stage (
     output logic [31:0] o_inst,
     o_pc_plus_4,
     o_pc,
-    input i_pc_sel,
-    input logic [31:0] i_jump_target
+    // Non-pipeline inputs
+    input logic ext_pc_sel,
+    input logic [31:0] ext_jump_target
 );
 
     localparam WIDTH = 32;
 
     // Internal signals
     logic [WIDTH-1:0] w_pc, w_pc_plus_4, w_inst;
+
+    // DEBUG
+    logic [WIDTH-1:0] DEBUG_INST;
+    assign DEBUG_INST = w_inst;
 
     // Pipeline registers
     p_reg #(
@@ -67,10 +72,10 @@ module p_if_id_stage (
     ) pc_unit (
         .clk(clk),
         .rst(rst),
-        .i_jump_target(i_jump_target),  // ALU result used for branch/jump offsets
+        .i_jump_target(ext_jump_target),  // ALU result used for branch/jump offsets
         .o_pc(w_pc),
         .o_pc_plus_4(w_pc_plus_4),
-        .i_pc_sel(i_pc_sel)  // Branch decision from  branch unit
+        .i_pc_sel(ext_pc_sel)  // Branch decision from  branch unit
     );
 
     // Instruction Memory
